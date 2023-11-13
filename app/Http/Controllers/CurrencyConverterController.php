@@ -1,0 +1,52 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class CurrencyConverterController extends Controller
+{
+   
+    public function index()
+{
+    // Hacer la llamada a la API y obtener la respuesta
+    $apiUrl = "https://openexchangerates.org/api/latest.json?app_id=1895d6bf08514e3fb89c3b9ff5778bf9";
+    $response = Http::get($apiUrl);
+
+    // Decodificar la respuesta JSON
+    $rates = $response->json();
+
+
+    // Pasar los datos a la vista
+    return view('currency_converter', ['rates' => $rates]);
+}
+
+    
+    public function convertCurrency(Request $request)
+    {
+        $amount = $request->input('amount');
+        $from = $request->input('from');
+        $to = $request->input('to');
+    
+        // Realizar la solicitud a la API de Open Exchange Rates
+        $response = Http::get("https://openexchangerates.org/api/latest.json?app_id=1895d6bf08514e3fb89c3b9ff5778bf9");
+        $data = $response->json();
+    
+        // Obtener la tasa de cambio
+        $rate = $data['rates'][$to];
+    
+        // Calcular el monto convertido
+        $convertedAmount = $amount * $rate;
+    
+        // Mostrar la vista de resultados
+        return view('currency_result', [
+            'amount' => $amount,
+            'from' => $from,
+            'to' => $to,
+            'convertedAmount' => $convertedAmount,
+           
+           
+        ]);
+    }
+    
+}
